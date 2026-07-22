@@ -182,7 +182,7 @@ function Home() {
           </div>
           <p>
             The original prototype was developed for the Young Coders&apos; Sphere competition.
-            This version includes later reliability and interface refinements for demonstration.
+            Brhas Hari contributed to backend development and handled debugging, who also handled subsequent interface refinements, deployment, analytics integration and user testing.
           </p>
         </section>
       </main>
