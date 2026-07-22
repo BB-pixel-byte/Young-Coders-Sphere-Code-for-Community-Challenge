@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: chore4more
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt && npm install && npm run build
+    startCommand: python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: CHOREMAP_DB_PATH
+        value: /tmp/choremap.db
+      - key: ANALYTICS_PASSWORD
+        sync: false
