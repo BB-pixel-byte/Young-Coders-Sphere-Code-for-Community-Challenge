@@ -1,4 +1,4 @@
-# ChoreMap iOS App - Complete Setup & Installation Guide
+# Chore4More iOS App - Complete Setup & Installation Guide
 
 ## System Requirements
 
@@ -36,7 +36,7 @@ sudo xcode-select --reset
 ```bash
 cd ~/path/to/Young-Coders-Sphere-Code-for-Community-Challenge
 ls ios/
-# Should show: ChoreMap.swift, Info.plist, Package.swift, etc.
+# Should show: Chore4More.swift, Info.plist, Package.swift, etc.
 ```
 
 ### Step 3: Open Project in Xcode
@@ -54,12 +54,12 @@ open -a Xcode ios/
 
 ### Step 4: Configure Build Settings
 
-1. Select the **ChoreMap** target
+1. Select the **Chore4More** target
 2. Go to **Build Settings** tab
 3. Search for and verify:
    - `iOS Deployment Target`: 15.0
    - `Swift Language Version`: 5.9
-   - `Bundle Identifier`: com.yourname.choremap
+   - `Bundle Identifier`: com.yourname.chore4more
    - `Code Signing Identity`: Apple Development (or your team)
 
 ### Step 5: Code Signing
@@ -78,9 +78,9 @@ open -a Xcode ios/
 
 Ensure `Info.plist` is in project:
 - Files should include:
-  - `ChoreMap.swift`
+  - `Chore4More.swift`
   - `Info.plist`
-  - `ChoreMapNetworking.swift`
+  - `Chore4MoreNetworking.swift`
   - `AR_IMPLEMENTATION.md`
 
 ## Backend Setup
@@ -163,7 +163,7 @@ ipconfig getifaddr en0
 ```
 
 2. Update iOS app to connect to your Mac:
-   - Edit `ChoreMapNetworking.swift`
+   - Edit `Chore4MoreNetworking.swift`
    - Change: `let apiBase = "http://192.168.1.100:8000"`
    - Build and run
 
@@ -290,7 +290,7 @@ curl http://192.168.1.100:8000/chores/all
 
 **In Xcode:**
 1. View → Debug Area → Show Console (⌘ + Shift + C)
-2. Filter by "ChoreMap" to see app logs
+2. Filter by "Chore4More" to see app logs
 
 **Common Issues:**
 
@@ -299,14 +299,14 @@ curl http://192.168.1.100:8000/chores/all
 Solution:
 1. Verify backend running: curl localhost:8000
 2. Check device on same WiFi
-3. Update API URL in ChoreMapNetworking.swift
+3. Update API URL in Chore4MoreNetworking.swift
 4. Rebuild app
 ```
 
 **Issue: "Camera permission denied"**
 ```
 Solution:
-1. Settings → ChoreMap → Camera: Allow
+1. Settings → Chore4More → Camera: Allow
 2. Restart app
 3. Try AR scan again
 ```
@@ -335,7 +335,7 @@ Solution:
 
 ### Optimize Image Size
 ```swift
-// In ChoreMapNetworking.swift
+// In Chore4MoreNetworking.swift
 // Change JPEG quality for smaller file size
 if let imageData = image.jpegData(compressionQuality: 0.6) {
     // Lower quality = smaller file = faster upload
@@ -374,8 +374,8 @@ config.timeoutIntervalForResource = 300  // Default: 60
 
 ```
 ios/
-├── ChoreMap.swift                  # Main app (views & models)
-├── ChoreMapNetworking.swift        # API layer
+├── Chore4More.swift                  # Main app (views & models)
+├── Chore4MoreNetworking.swift        # API layer
 ├── Info.plist                      # App configuration
 ├── Package.swift                   # Swift Package config
 ├── README.md                       # Main documentation

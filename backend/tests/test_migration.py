@@ -6,7 +6,7 @@ def test_migration_from_volunteer_skills(monkeypatch):
     db_path = os.path.join(os.path.dirname(__file__), "migration_test.db")
     if os.path.exists(db_path):
         os.remove(db_path)
-    monkeypatch.setenv("CHOREMAP_DB_PATH", db_path)
+    monkeypatch.setenv("CHORE4MORE_DB_PATH", db_path)
 
     conn = sqlite3.connect(db_path)
     conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, role TEXT, points INTEGER DEFAULT 0)")
@@ -41,7 +41,7 @@ def test_migration_filters_orphan_rows(monkeypatch):
     db_path = os.path.join(os.path.dirname(__file__), "migration_orphan.db")
     if os.path.exists(db_path):
         os.remove(db_path)
-    monkeypatch.setenv("CHOREMAP_DB_PATH", db_path)
+    monkeypatch.setenv("CHORE4MORE_DB_PATH", db_path)
 
     conn = sqlite3.connect(db_path)
     conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, role TEXT, points INTEGER DEFAULT 0)")
@@ -73,7 +73,7 @@ def test_migration_idempotent(monkeypatch):
     db_path = os.path.join(os.path.dirname(__file__), "migration_idem.db")
     if os.path.exists(db_path):
         os.remove(db_path)
-    monkeypatch.setenv("CHOREMAP_DB_PATH", db_path)
+    monkeypatch.setenv("CHORE4MORE_DB_PATH", db_path)
 
     conn = sqlite3.connect(db_path)
     conn.execute("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT, email TEXT UNIQUE, role TEXT, points INTEGER DEFAULT 0)")

@@ -2,14 +2,14 @@
 import PackageDescription
 
 let package = Package(
-    name: "ChoreMap",
+    name: "Chore4More",
     defaultLocalization: "en",
     platforms: [
         .iOS(.v15)
     ],
     targets: [
         .executableTarget(
-            name: "ChoreMap",
+            name: "Chore4More",
             dependencies: [],
             resources: []
         )

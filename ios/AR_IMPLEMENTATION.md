@@ -3,7 +3,7 @@
 ## ARKit 6.0+ Integration Guide
 
 ### Overview
-The ChoreMap iOS app uses ARKit 6.0 and RealityKit 2.0 to enable real-time environment scanning, 3D visualization, and AR-enhanced chore documentation.
+The Chore4More iOS app uses ARKit 6.0 and RealityKit 2.0 to enable real-time environment scanning, 3D visualization, and AR-enhanced chore documentation.
 
 ## Key AR Features
 
@@ -358,13 +358,13 @@ arView.session.run(configuration, options: .resetTracking)
 **Info.plist entries:**
 ```xml
 <key>NSCameraUsageDescription</key>
-<string>ChoreMap uses your camera to scan chore areas with AR for better analysis.</string>
+<string>Chore4More uses your camera to scan chore areas with AR for better analysis.</string>
 
 <key>NSPhotoLibraryUsageDescription</key>
-<string>ChoreMap saves AR capture images to your photo library.</string>
+<string>Chore4More saves AR capture images to your photo library.</string>
 
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>ChoreMap uses location to help match nearby volunteers.</string>
+<string>Chore4More uses location to help match nearby volunteers.</string>
 ```
 
 ## Testing AR Features

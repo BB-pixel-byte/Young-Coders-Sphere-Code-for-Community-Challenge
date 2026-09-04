@@ -3,7 +3,7 @@ import sqlite3
 
 
 def get_db():
-    db_path = os.environ.get("CHOREMAP_DB_PATH", "choremap.db")
+    db_path = os.environ.get("CHORE4MORE_DB_PATH") or os.environ.get("CHOREMAP_DB_PATH") or "chore4more.db"
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     conn.execute("PRAGMA foreign_keys = ON")

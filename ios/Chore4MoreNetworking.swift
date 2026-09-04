@@ -1,5 +1,5 @@
-// ChoreMapNetworking.swift
-// Centralized networking utilities for ChoreMap iOS app
+// Chore4MoreNetworking.swift
+// Centralized networking utilities for Chore4More iOS app
 
 import Foundation
 

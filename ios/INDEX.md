@@ -1,8 +1,8 @@
-# ChoreMap iOS Application - Complete Project Index
+# Chore4More iOS Application - Complete Project Index
 
 ## 📱 Project Overview
 
-ChoreMap iOS is a **production-ready** SwiftUI application with ARKit integration for the Young Coders Sphere community challenge. The app enables seniors to post chores and volunteers to help, all with AI-powered analysis and community gamification.
+Chore4More iOS is a **production-ready** SwiftUI application with ARKit integration for the Young Coders Sphere community challenge. The app enables seniors to post chores and volunteers to help, all with AI-powered analysis and community gamification.
 
 **Status:** ✅ **COMPLETE & FULLY FUNCTIONAL**
 
@@ -10,11 +10,11 @@ ChoreMap iOS is a **production-ready** SwiftUI application with ARKit integratio
 
 ### Core Application Files
 
-#### 1. **ChoreMap.swift** (Primary App File)
+#### 1. **Chore4More.swift** (Primary App File)
 - **Size:** ~1,200 lines
 - **Contains:** All SwiftUI views, models, state management
 - **Key Components:**
-  - `ChoreMapApp` - App entry point
+  - `Chore4MoreApp` - App entry point
   - `AuthManager` - Authentication & session state
   - `User`, `Chore`, `Reward`, `ChoreAnalysis` - Data models
   - `AuthView` - Login/registration screen
@@ -33,7 +33,7 @@ ChoreMap iOS is a **production-ready** SwiftUI application with ARKit integratio
 - ✅ Image upload & preview
 - ✅ Real-time data synchronization
 
-#### 2. **ChoreMapNetworking.swift** (API Layer)
+#### 2. **Chore4MoreNetworking.swift** (API Layer)
 - **Size:** ~400 lines
 - **Purpose:** Centralized networking service
 - **Key Components:**
@@ -56,7 +56,7 @@ ChoreMap iOS is a **production-ready** SwiftUI application with ARKit integratio
 #### 3. **Info.plist** (App Configuration)
 - **Purpose:** App metadata and permissions
 - **Includes:**
-  - Bundle identifier: `com.choremap.app`
+  - Bundle identifier: `com.chore4more.app`
   - iOS deployment target: 15.0
   - Camera permission request
   - Photo library permission request
@@ -346,7 +346,7 @@ open -a Xcode ios/
 **"Can't connect to backend"**
 - Verify backend running: `python -m uvicorn main:app --reload --port 8000`
 - Check network connectivity
-- Update API URL in ChoreMapNetworking.swift
+- Update API URL in Chore4MoreNetworking.swift
 
 **"AR not working"**
 - Use actual iPhone (XS or later)
@@ -448,8 +448,8 @@ This iOS app is **production-ready** and **fully functional** with:
 
 ```
 ios/ directory contains:
-├── ChoreMap.swift (1,200+ lines)
-├── ChoreMapNetworking.swift (400 lines)
+├── Chore4More.swift (1,200+ lines)
+├── Chore4MoreNetworking.swift (400 lines)
 ├── Info.plist (App configuration)
 ├── Package.swift (Build configuration)
 ├── README.md (Project overview)

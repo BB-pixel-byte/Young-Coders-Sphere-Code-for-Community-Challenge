@@ -35,26 +35,26 @@ open -a Xcode ios/
 ### Build for Simulator
 ```bash
 # Build only
-xcodebuild -scheme ChoreMap -destination 'platform=iOS Simulator,name=iPhone 15'
+xcodebuild -scheme Chore4More -destination 'platform=iOS Simulator,name=iPhone 15'
 
 # Build and run
-xcodebuild -scheme ChoreMap -destination 'platform=iOS Simulator,name=iPhone 15' test
+xcodebuild -scheme Chore4More -destination 'platform=iOS Simulator,name=iPhone 15' test
 ```
 
 ### Build for Device
 ```bash
 # Connect iPhone and build
-xcodebuild -scheme ChoreMap -destination 'platform=iOS,name=iPhone 15'
+xcodebuild -scheme Chore4More -destination 'platform=iOS,name=iPhone 15'
 ```
 
 ### Archive for Distribution
 ```bash
 # Create archive
-xcodebuild -scheme ChoreMap -archivePath build/ChoreMap.xcarchive archive
+xcodebuild -scheme Chore4More -archivePath build/Chore4More.xcarchive archive
 
 # Export for App Store
 xcodebuild -exportArchive \
-  -archivePath build/ChoreMap.xcarchive \
+  -archivePath build/Chore4More.xcarchive \
   -exportPath build/ipa \
   -exportOptionsPlist ExportOptions.plist
 ```
@@ -63,8 +63,8 @@ xcodebuild -exportArchive \
 
 ### Main Files
 
-**ChoreMap.swift** (Main Application File)
-- `@main struct ChoreMapApp` - App entry point
+**Chore4More.swift** (Main Application File)
+- `@main struct Chore4MoreApp` - App entry point
 - `struct User` - User model (Codable)
 - `struct Chore` - Chore model (Codable)
 - `struct Reward` - Reward model (Codable)
@@ -83,7 +83,7 @@ xcodebuild -exportArchive \
 - `struct ImagePicker` - Photo library integration
 - **Total Lines:** ~1,200 (well-organized, modular)
 
-**ChoreMapNetworking.swift** (API Layer)
+**Chore4MoreNetworking.swift** (API Layer)
 - `class APIService` - Centralized API service
 - Methods:
   - `register()` - User registration
@@ -162,27 +162,27 @@ xcodebuild -exportArchive \
 
 ### Separation of Concerns
 
-**View Layer (ChoreMap.swift)**
+**View Layer (Chore4More.swift)**
 - All SwiftUI components
 - User interface logic
 - Navigation handling
 - Form management
 - List rendering
 
-**Business Logic (ChoreMap.swift)**
+**Business Logic (Chore4More.swift)**
 - AuthManager for state
 - State @Published variables
 - User role logic
 - Data filtering
 
-**Network Layer (ChoreMapNetworking.swift)**
+**Network Layer (Chore4MoreNetworking.swift)**
 - APIService singleton
 - URLSession configuration
 - Request/response handling
 - Error management
 - JSON encoding/decoding
 
-**AR Layer (ChoreMap.swift)**
+**AR Layer (Chore4More.swift)**
 - ARScannerView wrapper
 - ARViewControllerWrapper implementation
 - Image capture logic
@@ -261,8 +261,8 @@ struct NewModel: Codable, Identifiable {
 
 **For Production:**
 ```swift
-// In ChoreMapNetworking.swift, APIService class
-private let apiBase = "https://api.choremap.com"  // Production
+// In Chore4MoreNetworking.swift, APIService class
+private let apiBase = "https://api.chore4more.com"  // Production
 ```
 
 **For Local Testing:**
@@ -390,7 +390,7 @@ if let imageData = image.jpegData(compressionQuality: 0.6) {
 ### Development → Testing
 ```bash
 # 1. Build for simulator
-xcodebuild -scheme ChoreMap test
+xcodebuild -scheme Chore4More test
 
 # 2. Manual testing
 # Run on simulator, verify features

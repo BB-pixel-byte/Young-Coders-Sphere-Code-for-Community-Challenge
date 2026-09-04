@@ -1,14 +1,14 @@
-# ChoreMap iOS App - Complete Implementation Guide
+# Chore4More iOS App - Complete Implementation Guide
 
 ## Overview
-The ChoreMap iOS app is a complete SwiftUI application with ARKit/RealityKit integration for scanning chore areas, capturing video/images, and providing AR visualization. The app communicates with the backend FastAPI server via HTTPS/JSON.
+The Chore4More iOS app is a complete SwiftUI application with ARKit/RealityKit integration for scanning chore areas, capturing video/images, and providing AR visualization. The app communicates with the backend FastAPI server via HTTPS/JSON.
 
 ## Architecture
 
 ### Core Components
 
 ```
-ChoreMapApp (Main Entry Point)
+Chore4MoreApp (Main Entry Point)
 ├── AuthView (Login/Register)
 ├── SeniorDashboard
 │   ├── SeniorChoreRequestView (with AR Scanner)
@@ -48,7 +48,7 @@ SQLite Database
 
 ### Step 2: Configure Build Settings
 
-1. Select the ChoreMap target
+1. Select the Chore4More target
 2. Go to "Build Settings"
 3. Ensure the following are set:
    - iOS Deployment Target: 15.0
@@ -388,7 +388,7 @@ npm run dev
 - Verify backend `/chores/post` endpoint accepts image data
 
 ### Permissions Denied
-- Go to Settings → ChoreMap
+- Go to Settings → Chore4More
 - Enable: Camera, Photos, Location
 - Restart app
 
@@ -421,7 +421,7 @@ npm run dev
 
 ```
 ios/
-├── ChoreMap.swift          # Main app file with all SwiftUI views
+├── Chore4More.swift          # Main app file with all SwiftUI views
 ├── Info.plist              # App configuration and permissions
 ├── Package.swift           # Swift Package Manager configuration
 └── README.md               # This file

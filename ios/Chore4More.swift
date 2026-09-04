@@ -4,7 +4,7 @@ import RealityKit
 
 // MARK: - Main App Entry Point
 @main
-struct ChoreMapApp: App {
+struct Chore4MoreApp: App {
     @StateObject private var authManager = AuthManager()
     
     var body: some Scene {
@@ -188,7 +188,7 @@ struct AuthView: View {
             
             VStack(spacing: 0) {
                 VStack(alignment: .leading, spacing: 12) {
-                    Text("ChoreMap")
+                    Text("Chore4More")
                         .font(.system(size: 32, weight: .bold))
                         .foregroundColor(.white)
                     Text("Community help, perfectly coordinated")

@@ -1,4 +1,4 @@
-# ChoreMap iOS App - Features & Capabilities Summary
+# Chore4More iOS App - Features & Capabilities Summary
 
 ## Complete Feature List
 
@@ -201,7 +201,7 @@ POST /rewards/{id}/redeem     - Redeem reward
 
 ```
 ┌─────────────────────────────────────────┐
-│        ChoreMap iOS App (SwiftUI)       │
+│        Chore4More iOS App (SwiftUI)       │
 ├─────────────────────────────────────────┤
 │                                         │
 │  ┌─────────────────────────────────┐   │
@@ -256,8 +256,8 @@ POST /rewards/{id}/redeem     - Redeem reward
 
 ```
 ios/
-├── ChoreMap.swift
-│   ├── ChoreMapApp (Main entry point)
+├── Chore4More.swift
+│   ├── Chore4MoreApp (Main entry point)
 │   ├── Models
 │   │   ├── User
 │   │   ├── Chore
@@ -281,7 +281,7 @@ ios/
 │       ├── ChoreFormViewModel
 │       └── DashboardViewModel
 │
-├── ChoreMapNetworking.swift
+├── Chore4MoreNetworking.swift
 │   ├── APIService (All API calls)
 │   ├── Error Handling
 │   ├── Request/Response encoding

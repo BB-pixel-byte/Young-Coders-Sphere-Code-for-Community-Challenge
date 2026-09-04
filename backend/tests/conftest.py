@@ -3,14 +3,14 @@ import pytest
 from fastapi.testclient import TestClient
 
 
-TEST_DB = os.path.join(os.path.dirname(__file__), "test_choremap.db")
+TEST_DB = os.path.join(os.path.dirname(__file__), "test_chore4more.db")
 
 
 @pytest.fixture(autouse=True)
 def clean_db(monkeypatch):
     if os.path.exists(TEST_DB):
         os.remove(TEST_DB)
-    monkeypatch.setenv("CHOREMAP_DB_PATH", TEST_DB)
+    monkeypatch.setenv("CHORE4MORE_DB_PATH", TEST_DB)
     monkeypatch.setenv("ANTHROPIC_API_KEY", "")
     monkeypatch.setenv("ANALYTICS_PASSWORD", "portfolio-test-password")
 

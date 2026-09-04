@@ -1,6 +1,6 @@
 import sqlite3
 
-conn = sqlite3.connect("choremap.db")
+conn = sqlite3.connect("chore4more.db")
 cursor = conn.cursor()
 
 try:
