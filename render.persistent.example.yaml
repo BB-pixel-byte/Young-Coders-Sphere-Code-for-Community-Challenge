@@ -1,0 +1,24 @@
+# Review costs and attach a paid persistent disk before opening a real pilot.
+# This file is deliberately not named render.yaml, so it cannot change the
+# current free demo service through an automatic Blueprint sync.
+services:
+  - type: web
+    name: chore4more
+    runtime: python
+    plan: 0.5c-512mb
+    buildCommand: pip install -r requirements.txt && npm install && npm run build
+    startCommand: python -m uvicorn backend.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    disk:
+      name: chore4more-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.8
+      - key: CHORE4MORE_DB_PATH
+        value: /var/data/chore4more.db
+      - key: PILOT_INVITE_CODE
+        sync: false
+      - key: ANALYTICS_PASSWORD
+        sync: false

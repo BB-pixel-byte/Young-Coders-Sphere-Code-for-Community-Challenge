@@ -4,16 +4,17 @@ load_dotenv()
 from pathlib import Path
 
 from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from contextlib import asynccontextmanager
 
 try:
     from .models.database import init_db
+    from .security import legacy_test_mode
     from .routes import analytics, users, chores, volunteers, skills, profiles, rewards, spatial
 except ImportError:  # pragma: no cover - fallback for direct script execution
     from models.database import init_db
+    from security import legacy_test_mode
     from routes import analytics, users, chores, volunteers, skills, profiles, rewards, spatial
 
 
@@ -25,22 +26,18 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title="Chore4More API", lifespan=lifespan)
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 app.include_router(users.router, prefix="/users", tags=["Users"])
 app.include_router(chores.router, prefix="/chores", tags=["Chores"])
-app.include_router(volunteers.router, prefix="/volunteers", tags=["Volunteers"])
-app.include_router(skills.router, prefix="/skills", tags=["Skills"])
-app.include_router(profiles.router, prefix="/profiles", tags=["Profiles"])
-app.include_router(rewards.router, prefix="/rewards", tags=["Rewards"])
-app.include_router(spatial.router)
 app.include_router(analytics.router, prefix="/analytics", tags=["Private analytics"])
+
+# Earlier experimental endpoints use untrusted numeric IDs. Keep them available
+# only to the legacy test suite until they receive account-level authorization.
+if legacy_test_mode():
+    app.include_router(volunteers.router, prefix="/volunteers", tags=["Volunteers"])
+    app.include_router(skills.router, prefix="/skills", tags=["Skills"])
+    app.include_router(profiles.router, prefix="/profiles", tags=["Profiles"])
+    app.include_router(rewards.router, prefix="/rewards", tags=["Rewards"])
+    app.include_router(spatial.router)
 
 
 @app.get("/api/health")
@@ -52,8 +49,9 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 UPLOAD_DIR = PROJECT_ROOT / "uploads"
 FRONTEND_DIST = PROJECT_ROOT / "frontend" / "dist"
 
-UPLOAD_DIR.mkdir(exist_ok=True)
-app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
+if legacy_test_mode():
+    UPLOAD_DIR.mkdir(exist_ok=True)
+    app.mount("/uploads", StaticFiles(directory=UPLOAD_DIR), name="uploads")
 
 if FRONTEND_DIST.exists():
     app.mount("/assets", StaticFiles(directory=FRONTEND_DIST / "assets"), name="assets")

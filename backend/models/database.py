@@ -27,6 +27,16 @@ def init_db():
     """)
 
     cursor.execute("""
+        CREATE TABLE IF NOT EXISTS user_sessions (
+            token_hash TEXT PRIMARY KEY,
+            user_id INTEGER NOT NULL,
+            expires_at TEXT NOT NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+        )
+    """)
+    cursor.execute("CREATE INDEX IF NOT EXISTS idx_user_sessions_user ON user_sessions(user_id)")
+
+    cursor.execute("""
         CREATE TABLE IF NOT EXISTS chores (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             senior_id INTEGER NOT NULL,

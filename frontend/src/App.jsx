@@ -4,6 +4,13 @@ import axios from 'axios';
 import './App.css';
 
 const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || '' });
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('user_token');
+  if (token && !config.headers?.Authorization) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
 const ANALYTICS_TOKEN_KEY = 'c4m_analytics_token';
 const VISITOR_KEY = 'c4m_visitor_id';
 const VISIT_SESSION_KEY = 'c4m_visit_session';
@@ -34,21 +41,23 @@ const analyticsIdentity = () => {
 };
 
 const getSession = () => ({
-  id: localStorage.getItem('user_id'),
+  id: localStorage.getItem('user_token') ? localStorage.getItem('user_id') : null,
   name: localStorage.getItem('name'),
   role: localStorage.getItem('role'),
 });
 
-const saveSession = ({ user_id, name, role }) => {
+const saveSession = ({ user_id, name, role, token }) => {
   localStorage.setItem('user_id', user_id);
   localStorage.setItem('name', name);
   localStorage.setItem('role', role);
+  localStorage.setItem('user_token', token);
 };
 
 const clearUserSession = () => {
   localStorage.removeItem('user_id');
   localStorage.removeItem('name');
   localStorage.removeItem('role');
+  localStorage.removeItem('user_token');
 };
 
 const messageFrom = (error, fallback) =>
@@ -119,7 +128,7 @@ function Home() {
               <Link className="primary-button" to="/register">Get started</Link>
               <a className="secondary-button" href="#how-it-works">See how it works</a>
             </div>
-            <p className="prototype-note">Competition prototype · Young Coders&apos; Sphere</p>
+            <p className="prototype-note">Invitation-only pilot · Original prototype for Young Coders&apos; Sphere</p>
           </div>
 
           <div className="demo-panel" aria-label="Example chore request">
@@ -160,7 +169,7 @@ function Home() {
             <article>
               <span className="step-number">1</span>
               <h3>Describe the chore</h3>
-              <p>A senior adds the task, location and an optional photo. Image analysis can suggest tools, steps and safety notes.</p>
+              <p>A senior describes a small task and gives a general area. The pilot coordinator arranges the details privately.</p>
             </article>
             <article>
               <span className="step-number">2</span>
@@ -170,7 +179,7 @@ function Home() {
             <article>
               <span className="step-number">3</span>
               <h3>The task gets done</h3>
-              <p>Both sides can track the request from open to claimed to complete, while volunteers earn points.</p>
+              <p>The volunteer marks the task finished, and the senior confirms it before it counts as completed.</p>
             </article>
           </div>
         </section>
@@ -194,7 +203,7 @@ function Home() {
 function AuthPage({ mode }) {
   const isLogin = mode === 'login';
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'senior' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'senior', invite_code: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -217,7 +226,7 @@ function AuthPage({ mode }) {
         const payload = { ...form, email: form.email.trim() };
         const { data } = await api.post('/users/register', payload);
         if (data.error) throw new Error(data.error);
-        saveSession({ user_id: data.user_id, name: form.name, role: form.role });
+        saveSession(data);
         navigate(form.role === 'senior' ? '/senior' : '/volunteer');
       }
     } catch (err) {
@@ -235,7 +244,7 @@ function AuthPage({ mode }) {
         <div className="auth-heading">
           <p className="project-label">{isLogin ? 'Welcome back' : 'Create an account'}</p>
           <h1>{isLogin ? 'Sign in to continue.' : 'How will you use Chore4More?'}</h1>
-          <p>{isLogin ? 'Enter the details you used when registering.' : 'Choose a role now—you will see the matching dashboard.'}</p>
+          <p>{isLogin ? 'Enter the details you used when registering.' : 'Pilot participants need an invitation code from their coordinator.'}</p>
         </div>
 
         <form onSubmit={submit}>
@@ -252,6 +261,7 @@ function AuthPage({ mode }) {
           {!isLogin && <Field label="Name" value={form.name} onChange={(name) => setForm({ ...form, name })} placeholder="Your name" />}
           <Field label="Email" type="email" value={form.email} onChange={(email) => setForm({ ...form, email })} placeholder="you@example.com" />
           <Field label="Password" type="password" value={form.password} onChange={(password) => setForm({ ...form, password })} placeholder="Enter a password" />
+          {!isLogin && <Field label="Pilot invitation code" value={form.invite_code} onChange={(invite_code) => setForm({ ...form, invite_code })} placeholder="Code from your coordinator" />}
           {error && <p className="form-message form-message--error" role="alert">{error}</p>}
           <button className="primary-button form-submit" disabled={busy}>{busy ? 'Please wait…' : isLogin ? 'Sign in' : 'Create account'}</button>
         </form>
@@ -508,11 +518,10 @@ function DashboardHeader({ eyebrow, title, description }) {
 function SeniorDashboard() {
   const session = getSession();
   const [form, setForm] = useState({ title: '', description: '', location: '' });
-  const [image, setImage] = useState(null);
-  const [analysis, setAnalysis] = useState(null);
   const [chores, setChores] = useState([]);
   const [message, setMessage] = useState({ type: '', text: '' });
   const [busy, setBusy] = useState('');
+  const [confirming, setConfirming] = useState(null);
 
   const loadChores = useCallback(async () => {
     try {
@@ -525,21 +534,6 @@ function SeniorDashboard() {
 
   if (!session.id || session.role !== 'senior') return <Navigate to="/login" replace />;
 
-  const analyze = async () => {
-    if (!image) return;
-    setBusy('analyze');
-    setMessage({ type: '', text: '' });
-    const data = new FormData();
-    data.append('image', image);
-    data.append('description', form.description);
-    try {
-      const response = await api.post('/chores/analyze', data);
-      setAnalysis(response.data.analysis);
-    } catch (error) {
-      setMessage({ type: 'error', text: messageFrom(error, 'Image analysis failed. You can still post the request.') });
-    } finally { setBusy(''); }
-  };
-
   const post = async (event) => {
     event.preventDefault();
     setBusy('post');
@@ -547,24 +541,26 @@ function SeniorDashboard() {
     const data = new FormData();
     data.append('senior_id', session.id);
     Object.entries(form).forEach(([key, value]) => data.append(key, value));
-    if (image) data.append('images', image);
-    if (analysis) {
-      data.append('ai_tools', JSON.stringify(analysis.tools_needed || []));
-      data.append('ai_steps', JSON.stringify(analysis.steps || []));
-      data.append('ai_skills_needed', JSON.stringify(analysis.skills_needed || []));
-      data.append('ai_difficulty', analysis.difficulty || '');
-      data.append('ai_estimated_time', analysis.estimated_time || '');
-      data.append('ai_safety_notes', analysis.safety_notes || '');
-    }
     try {
       await api.post('/chores/post', data);
       setForm({ title: '', description: '', location: '' });
-      setImage(null); setAnalysis(null);
       setMessage({ type: 'success', text: 'Your request is now visible to volunteers.' });
       await loadChores();
     } catch (error) {
       setMessage({ type: 'error', text: messageFrom(error, 'The request could not be posted.') });
     } finally { setBusy(''); }
+  };
+
+  const confirm = async (choreId) => {
+    setConfirming(choreId);
+    setMessage({ type: '', text: '' });
+    try {
+      await api.post(`/chores/${choreId}/confirm`);
+      setMessage({ type: 'success', text: 'Thank you. This chore is now confirmed complete.' });
+      await loadChores();
+    } catch (error) {
+      setMessage({ type: 'error', text: messageFrom(error, 'Could not confirm this chore.') });
+    } finally { setConfirming(null); }
   };
 
   return (
@@ -577,12 +573,7 @@ function SeniorDashboard() {
             <Field label="Chore title" value={form.title} onChange={(title) => setForm({ ...form, title })} placeholder="e.g. Carry two boxes upstairs" />
             <label className="field"><span>Description</span><textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Add anything the volunteer should know" required /></label>
             <Field label="General location" value={form.location} onChange={(location) => setForm({ ...form, location })} placeholder="e.g. Setagaya, Tokyo" />
-            <label className="upload-box">
-              <input type="file" accept="image/*" onChange={(event) => { setImage(event.target.files?.[0] || null); setAnalysis(null); }} />
-              <span className="upload-symbol">↥</span><strong>{image ? image.name : 'Add a photo (optional)'}</strong><small>A photo can help explain the task.</small>
-            </label>
-            {image && !analysis && <button className="analysis-button" type="button" onClick={analyze} disabled={busy === 'analyze'}>{busy === 'analyze' ? 'Analyzing…' : 'Suggest a plan from this photo'}</button>}
-            {analysis && <AnalysisCard analysis={analysis} />}
+            <p className="safety-note">Use only a general area. Do not enter an address, phone number, or sensitive details here. Your coordinator will arrange the visit.</p>
             {message.text && <p className={`form-message form-message--${message.type}`}>{message.text}</p>}
             <button className="primary-button form-submit" disabled={Boolean(busy)}>{busy === 'post' ? 'Posting…' : 'Post request'}</button>
           </form>
@@ -591,7 +582,7 @@ function SeniorDashboard() {
         <section className="panel activity-panel">
           <div className="panel-heading"><div><p>Your activity</p><h2>Recent requests</h2></div><span className="count-chip">{chores.length}</span></div>
           <div className="chore-list">
-            {chores.length ? chores.map((chore) => <ChoreCard key={chore.id} chore={chore} />) : <EmptyState title="No requests yet" text="Your first posted chore will appear here." />}
+            {chores.length ? chores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'awaiting_confirmation' ? (confirming === chore.id ? 'Saving…' : 'Confirm it was done') : null} disabled={confirming === chore.id} onAction={() => confirm(chore.id)} />) : <EmptyState title="No requests yet" text="Your first posted chore will appear here." />}
           </div>
         </section>
       </main>
@@ -662,7 +653,7 @@ function VolunteerDashboard() {
           <section className="panel">
             <div className="panel-heading"><div><p>Your commitments</p><h2>Claimed and completed</h2></div><span className="count-chip">{myChores.length}</span></div>
             <div className="chore-list">
-              {myChores.length ? myChores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'claimed' ? (busy === chore.id ? 'Saving…' : 'Mark complete') : null} disabled={busy === chore.id} onAction={chore.status === 'claimed' ? () => act(chore.id, 'complete') : null} />) : <EmptyState title="No claimed chores" text="When you offer to help, the request will move here." />}
+              {myChores.length ? myChores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'claimed' ? (busy === chore.id ? 'Saving…' : 'Mark finished') : null} disabled={busy === chore.id} onAction={chore.status === 'claimed' ? () => act(chore.id, 'complete') : null} />) : <EmptyState title="No claimed chores" text="When you offer to help, the request will move here." />}
             </div>
           </section>
         </div>
@@ -672,10 +663,10 @@ function VolunteerDashboard() {
 }
 
 function ChoreCard({ chore, actionLabel, onAction, disabled }) {
-  const status = chore.status === 'done' ? 'complete' : chore.status;
+  const status = chore.status === 'done' ? 'complete' : chore.status === 'awaiting_confirmation' ? 'awaiting confirmation' : chore.status;
   return (
     <article className="chore-card">
-      <div className="chore-card-top"><span className={`status status--${status}`}>{status}</span><span className="chore-location">{chore.location || 'Location not specified'}</span></div>
+      <div className="chore-card-top"><span className={`status status--${chore.status === 'awaiting_confirmation' ? 'claimed' : status}`}>{status}</span><span className="chore-location">{chore.location || 'Location not specified'}</span></div>
       <h3>{chore.title}</h3>
       <p>{chore.description || 'No additional details provided.'}</p>
       {(chore.ai_estimated_time || chore.ai_difficulty) && <div className="chore-details"><span>{chore.ai_estimated_time || 'Time not estimated'}</span><span>{chore.ai_difficulty || 'Difficulty not rated'}</span></div>}
