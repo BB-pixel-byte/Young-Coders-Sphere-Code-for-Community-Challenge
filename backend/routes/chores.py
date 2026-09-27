@@ -4,13 +4,15 @@ import shutil
 import uuid
 from typing import List, Optional
 
-from fastapi import APIRouter, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
 
 try:
     from ..models.database import get_db
+    from ..security import legacy_test_mode, require_identity, require_role, require_user
     from ..services.ai_analyzer import analyze_chore_images
 except ImportError:  # pragma: no cover - direct backend execution
     from models.database import get_db
+    from security import legacy_test_mode, require_identity, require_role, require_user
     from services.ai_analyzer import analyze_chore_images
 
 router = APIRouter()
@@ -44,7 +46,11 @@ def _media_for(cursor, chore_id):
 async def analyze_chore(
     description: str = Form(""),
     image: UploadFile = File(...),
+    actor=Depends(require_user),
 ):
+    require_role(actor, "senior")
+    if not legacy_test_mode():
+        raise HTTPException(status_code=503, detail="Photo analysis is not available in the pilot.")
     image_bytes = await image.read()
     analysis = analyze_chore_images(
         image_bytes=image_bytes,
@@ -70,7 +76,11 @@ async def post_chore(
     ai_safety_notes: str = Form(""),
     images: Optional[List[UploadFile]] = File(None),
     video: Optional[UploadFile] = File(None),
+    actor=Depends(require_user),
 ):
+    require_identity(actor, senior_id, "senior")
+    if not legacy_test_mode() and (images or video):
+        raise HTTPException(status_code=400, detail="Please use a text-only request for this pilot.")
     image_paths = []
     image_bytes = None
     image_media_type = "image/jpeg"
@@ -169,7 +179,8 @@ async def post_chore(
 
 
 @router.get("/all")
-def get_all_chores():
+def get_all_chores(actor=Depends(require_user)):
+    require_role(actor, "volunteer")
     conn = get_db()
     cursor = conn.cursor()
     rows = cursor.execute(
@@ -181,7 +192,8 @@ def get_all_chores():
 
 
 @router.get("/senior/{senior_id}")
-def get_senior_chores(senior_id: int):
+def get_senior_chores(senior_id: int, actor=Depends(require_user)):
+    require_identity(actor, senior_id, "senior")
     conn = get_db()
     cursor = conn.cursor()
     rows = cursor.execute(
@@ -194,7 +206,8 @@ def get_senior_chores(senior_id: int):
 
 
 @router.get("/volunteer/{volunteer_id}")
-def get_volunteer_chores(volunteer_id: int):
+def get_volunteer_chores(volunteer_id: int, actor=Depends(require_user)):
+    require_identity(actor, volunteer_id, "volunteer")
     conn = get_db()
     cursor = conn.cursor()
     rows = cursor.execute(
@@ -207,20 +220,30 @@ def get_volunteer_chores(volunteer_id: int):
 
 
 @router.get("/{chore_id}")
-def get_chore(chore_id: int):
+def get_chore(chore_id: int, actor=Depends(require_user)):
     conn = get_db()
     cursor = conn.cursor()
     chore = cursor.execute("SELECT * FROM chores WHERE id = ?", (chore_id,)).fetchone()
     if not chore:
         conn.close()
         raise HTTPException(status_code=404, detail="Chore not found")
+    if not legacy_test_mode():
+        allowed = (actor["role"] == "senior" and actor["id"] == chore["senior_id"]) or (
+            actor["role"] == "volunteer" and (
+                chore["status"] == "open" or actor["id"] == chore["volunteer_id"]
+            )
+        )
+        if not allowed:
+            conn.close()
+            raise HTTPException(status_code=403, detail="This request is not available to your account.")
     result = _chore_response(chore, _media_for(cursor, chore_id))
     conn.close()
     return result
 
 
 @router.post("/{chore_id}/claim")
-def claim_chore(chore_id: int, volunteer_id: int):
+def claim_chore(chore_id: int, volunteer_id: int, actor=Depends(require_user)):
+    require_identity(actor, volunteer_id, "volunteer")
     conn = get_db()
     cursor = conn.cursor()
     chore = cursor.execute("SELECT id FROM chores WHERE id = ?", (chore_id,)).fetchone()
@@ -252,7 +275,9 @@ def claim_chore(chore_id: int, volunteer_id: int):
 
 
 @router.post("/{chore_id}/complete")
-def complete_chore(chore_id: int, volunteer_id: int = None):
+def complete_chore(chore_id: int, volunteer_id: int = None, actor=Depends(require_user)):
+    if not legacy_test_mode():
+        require_identity(actor, volunteer_id or actor["id"], "volunteer")
     conn = get_db()
     cursor = conn.cursor()
     chore = cursor.execute(
@@ -267,9 +292,25 @@ def complete_chore(chore_id: int, volunteer_id: int = None):
     if chore["volunteer_id"] is None:
         conn.close()
         raise HTTPException(status_code=400, detail="Chore has no claiming volunteer")
+    if not legacy_test_mode() and actor["id"] != chore["volunteer_id"]:
+        conn.close()
+        raise HTTPException(status_code=403, detail="Only the claiming volunteer can finish this chore")
     if volunteer_id is not None and chore["volunteer_id"] != volunteer_id:
         conn.close()
         raise HTTPException(status_code=400, detail="Only the claiming volunteer can complete this chore")
+
+    if not legacy_test_mode():
+        cursor.execute(
+            """UPDATE chores SET status = 'awaiting_confirmation'
+               WHERE id = ? AND status = 'claimed'""",
+            (chore_id,),
+        )
+        if cursor.rowcount == 0:
+            conn.close()
+            raise HTTPException(status_code=400, detail="Chore status changed; try refreshing.")
+        conn.commit()
+        conn.close()
+        return {"message": "Marked finished. Waiting for the senior to confirm."}
 
     effective_volunteer = volunteer_id or chore["volunteer_id"]
     cursor.execute(
@@ -288,3 +329,34 @@ def complete_chore(chore_id: int, volunteer_id: int = None):
     conn.commit()
     conn.close()
     return {"message": "Chore completed! 50 points awarded!"}
+
+
+@router.post("/{chore_id}/confirm")
+def confirm_chore(chore_id: int, actor=Depends(require_user)):
+    require_role(actor, "senior")
+    conn = get_db()
+    cursor = conn.cursor()
+    chore = cursor.execute(
+        "SELECT senior_id, volunteer_id, status FROM chores WHERE id = ?", (chore_id,)
+    ).fetchone()
+    if not chore:
+        conn.close()
+        raise HTTPException(status_code=404, detail="Chore not found")
+    if actor is not None and actor["id"] != chore["senior_id"]:
+        conn.close()
+        raise HTTPException(status_code=403, detail="This action is not available to your account.")
+    if chore["status"] != "awaiting_confirmation" or chore["volunteer_id"] is None:
+        conn.close()
+        raise HTTPException(status_code=400, detail="This chore is not waiting for confirmation.")
+    cursor.execute(
+        """UPDATE chores SET status = 'done', completed_at = CURRENT_TIMESTAMP
+           WHERE id = ? AND status = 'awaiting_confirmation'""",
+        (chore_id,),
+    )
+    if cursor.rowcount == 0:
+        conn.close()
+        raise HTTPException(status_code=400, detail="Chore status changed; try refreshing.")
+    cursor.execute("UPDATE users SET points = points + 50 WHERE id = ?", (chore["volunteer_id"],))
+    conn.commit()
+    conn.close()
+    return {"message": "Chore confirmed complete. Thank you!"}

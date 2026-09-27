@@ -10,17 +10,18 @@ reliability, deployment and interface refinements for portfolio demonstration.
 ## What works
 
 - Senior and volunteer registration and sign-in
-- Senior chore requests with an optional image
-- Optional Gemini image analysis for suggested tools, steps and safety notes
-- Safe fallback suggestions when no Gemini key is configured
-- Volunteer request board, claiming and completion
+- Invitation-only senior and volunteer registration with salted passwords and
+  server-issued sessions
+- Text-only chore requests in the pilot flow; no saved photos or public uploads
+- Volunteer request board and account-authorized claiming
+- Senior confirmation before completion counts or points are awarded
 - Senior status tracking
 - Volunteer points and completion totals
 - Responsive mobile and desktop interface
 - Password-protected, unlisted pilot analytics dashboard
 - Anonymous visitor, registration and chore-activation measurement
 - CSV analytics snapshots for portfolio evidence
-- One-server production setup: FastAPI serves the compiled React app
+- One-server setup: FastAPI serves the compiled React app
 
 ## Run locally
 
@@ -37,9 +38,9 @@ python -m uvicorn backend.main:app --host 127.0.0.1 --port 8000
 
 Open <http://127.0.0.1:8000>.
 
-Image analysis returns a useful fallback without any API key. To use Gemini,
-copy `.env.example` to `.env` and enter a private `GEMINI_API_KEY`. Never commit
-the real `.env` file.
+The current pilot flow does not accept photos or run image analysis. Legacy
+image endpoints remain available only in the isolated test mode. For a local
+pilot test, choose a private `PILOT_INVITE_CODE` in `.env`. Never commit `.env`.
 
 To use the private analytics dashboard, also set `ANALYTICS_PASSWORD` in the
 private `.env` file, restart the server, and open
@@ -53,8 +54,9 @@ names, emails or IP addresses.
 1. Create a senior account and post a request.
 2. Sign out.
 3. Create a volunteer account and claim the request.
-4. Mark it complete.
-5. Sign back into the senior account and confirm its status is complete.
+4. Mark it finished as the volunteer.
+5. Sign back into the senior account and confirm it was done. The status is
+   now complete and points are awarded.
 
 Run automated backend tests with:
 
@@ -64,14 +66,13 @@ python -m pytest -q
 
 ## Deploy without buying a domain
 
-`render.yaml` contains a free-tier Render configuration. Connect this
-repository to Render and it will build the frontend and start the FastAPI app.
-The assigned `https://...onrender.com` address can be used as a public demo.
-Render will prompt you to enter a private `ANALYTICS_PASSWORD` during setup.
+`render.yaml` retains the free-tier demo configuration. Its `/tmp` SQLite data
+is temporary. Pilot registration refuses to open on that path, even with an
+invitation code. The separate `render.persistent.example.yaml` is a reviewable
+paid-disk option; applying it changes costs and must be reviewed first.
 
-For a real public pilot, replace the temporary SQLite storage with a persistent
-managed database and add identity verification, moderation, privacy controls
-and safeguarding before connecting unfamiliar seniors and volunteers.
+For a real pilot, verify persistent storage, an adult host's screening and
+supervision process, private coordination, and consent before inviting people.
 
 ## Technology
 
