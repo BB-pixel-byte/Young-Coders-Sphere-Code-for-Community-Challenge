@@ -1,7 +1,6 @@
 # Chore4More
 
-Chore4More is a community prototype that helps older adults request assistance
-with household chores and lets volunteers claim nearby tasks.
+Chore4More is a student-built prototype exploring the underutilization of women's skills. Community hosts share short, flexible local opportunities, and women choose ways to contribute that fit their skills and availability.
 
 The original project was developed by a four-person team for the Young Coders'
 Sphere competition. This repository is an archived team copy with later
@@ -9,17 +8,16 @@ reliability, deployment and interface refinements for portfolio demonstration.
 
 ## What works
 
-- Senior and volunteer registration and sign-in
-- Invitation-only senior and volunteer registration with salted passwords and
-  server-issued sessions
-- Text-only chore requests in the pilot flow; no saved photos or public uploads
-- Volunteer request board and account-authorized claiming
-- Senior confirmation before completion counts or points are awarded
-- Senior status tracking
-- Volunteer points and completion totals
+- Registration and sign-in for women contributors and community hosts
+- Invitation-only registration with salted passwords and server-issued sessions
+- Text-only community opportunities in the pilot flow; no saved photos or public uploads
+- Opportunity board for women contributors, with account-authorized selection
+- Host confirmation before contributions count as complete or points are awarded
+- Community host status tracking
+- Recognition points and completed-contribution totals
 - Responsive mobile and desktop interface
 - Password-protected, unlisted pilot analytics dashboard
-- Anonymous visitor, registration and chore-activation measurement
+- Anonymous visitor, registration and opportunity-activation measurement
 - CSV analytics snapshots for portfolio evidence
 - One-server setup: FastAPI serves the compiled React app
 
@@ -51,12 +49,12 @@ names, emails or IP addresses.
 
 ## Test the core journey
 
-1. Create a senior account and post a request.
+1. Create a community host account and post an opportunity.
 2. Sign out.
-3. Create a volunteer account and claim the request.
-4. Mark it finished as the volunteer.
-5. Sign back into the senior account and confirm it was done. The status is
-   now complete and points are awarded.
+3. Create an account as a woman contributor and select the opportunity.
+4. Mark the contribution complete.
+5. Sign back into the host account and confirm it. The contribution is now
+   verified and recognition points are awarded.
 
 Run automated backend tests with:
 

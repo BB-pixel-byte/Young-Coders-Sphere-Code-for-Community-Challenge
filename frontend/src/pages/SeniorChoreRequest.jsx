@@ -27,8 +27,8 @@ export default function SeniorChoreRequest() {
     <div className="chore-request">
       <header className="page-header">
         <p className="greeting">Good morning, Margaret</p>
-        <h1>Request help with a chore</h1>
-        <p>Scan the area and we&apos;ll build a step-by-step plan for a nearby volunteer.</p>
+        <h1>Share a community opportunity</h1>
+        <p>Describe the place and contribution you have in mind; the coordinator will keep the opportunity clear and suitable for interested women contributors.</p>
       </header>
 
       <div className="step-track" aria-hidden="true">
@@ -94,13 +94,13 @@ export default function SeniorChoreRequest() {
         </div>
         <div>
           <strong>Spatial AI preview</strong>
-          <p>Your scan becomes a 3D blueprint with tools, safety notes, and step-by-step instructions for volunteers.</p>
+          <p>Your scan becomes a visual guide with context, safety notes and clear steps for contributors.</p>
         </div>
       </div>
 
       <section className="form-section">
         <div className="field-group">
-          <label className="section-label" htmlFor="chore-title">What needs doing?</label>
+          <label className="section-label" htmlFor="chore-title">What contribution would be useful?</label>
           <input
             id="chore-title"
             className="input-field"
@@ -111,7 +111,7 @@ export default function SeniorChoreRequest() {
         </div>
 
         <div className="field-group">
-          <label className="section-label" htmlFor="chore-desc">Anything else they should know?</label>
+          <label className="section-label" htmlFor="chore-desc">What skills or context should contributors know?</label>
           <textarea
             id="chore-desc"
             className="input-field"
@@ -179,7 +179,7 @@ export default function SeniorChoreRequest() {
             <path d="M5 12h14M13 6l6 6-6 6" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <p className="submit-note">A volunteer in your neighborhood will be matched once AI finishes analyzing your scan.</p>
+        <p className="submit-note">Women contributors can review the opportunity and choose whether it fits their skills and availability.</p>
       </footer>
     </div>
   )

@@ -142,7 +142,7 @@ export default function RewardsPoints() {
     return (
       <div className="rewards-page">
         <header className="page-header">
-          <h1>Rewards &amp; points</h1>
+          <h1>Contribution points &amp; rewards</h1>
         </header>
         <section className="placeholder-section">
           <p className="section-label">Loading your points...</p>
@@ -155,8 +155,8 @@ export default function RewardsPoints() {
     <div className="rewards-page">
       <header className="page-header">
         <p className="greeting">Welcome back, {storedName}</p>
-        <h1>Rewards &amp; points</h1>
-        <p>Earn points helping neighbors. Redeem at local businesses.</p>
+        <h1>Contribution points &amp; rewards</h1>
+        <p>Collect recognition points for host-confirmed community contributions, then redeem them for local rewards.</p>
       </header>
 
       <section className="points-hero" aria-label="Points balance">
@@ -214,7 +214,7 @@ export default function RewardsPoints() {
             <div className="stat-divider" />
             <div className="stat">
               <span className="stat-value">{completedChores}</span>
-              <span className="stat-label">Chores done</span>
+              <span className="stat-label">Contributions confirmed</span>
             </div>
             <div className="stat-divider" />
             <div className="stat">

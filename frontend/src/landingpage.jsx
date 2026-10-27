@@ -34,23 +34,22 @@ export function LandingPage() {
     <div style={styles.container}>
       <div style={styles.content}>
         <div style={styles.header}>
-          <h1 style={styles.title}>Help at home, reviewed with care.</h1>
-          <h2 style={styles.subtitle}>A calmer way for seniors and volunteers to coordinate chores.</h2>
+          <h1 style={styles.title}>Skills women already have. Opportunities that fit.</h1>
+          <h2 style={styles.subtitle}>A flexible way for women to find and contribute to local community opportunities.</h2>
           <p style={styles.description}>
-            Seniors post what they need, volunteers claim work and upload proof, 
-            and points are awarded only after the senior approves the review.
+            Community hosts post small opportunities; women choose those that fit their skills and availability. Contributions are confirmed by the host.
           </p>
         </div>
 
         <div style={styles.cardGrid}>
           <div style={styles.card}>
-            <span style={styles.cardTag}>For Seniors</span>
-            <h3 style={styles.cardTitle}>Post, schedule, review</h3>
-            <p style={styles.cardText}>See claimed chores and a clear review queue when a volunteer submits proof.</p>
+            <span style={styles.cardTag}>For community hosts</span>
+            <h3 style={styles.cardTitle}>Post a clear opportunity</h3>
+            <p style={styles.cardText}>Describe the contribution, time commitment and general area; confirm it when complete.</p>
           </div>
           <div style={styles.card}>
-            <span style={styles.cardTag}>For Volunteers</span>
-            <h3 style={styles.cardTitle}>Claim, prove, earn</h3>
+            <span style={styles.cardTag}>For women contributors</span>
+            <h3 style={styles.cardTitle}>Choose, contribute, be recognized</h3>
             <p style={styles.cardText}>Upload or capture a proof photo, then track pending, approved, and not approved work.</p>
           </div>
         </div>

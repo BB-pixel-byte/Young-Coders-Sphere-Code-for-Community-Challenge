@@ -118,24 +118,23 @@ function Home() {
       <main>
         <section className="hero">
           <div className="hero-copy">
-            <p className="project-label">A student-built community project</p>
-            <h1>Ask for a hand.<br />Offer one nearby.</h1>
+            <p className="project-label">A student-built project on women's skills</p>
+            <h1>Make room for women's skills.<br />Create flexible ways to contribute.</h1>
             <p className="hero-text">
-              Chore4More connects older adults who need help with everyday household
-              tasks to volunteers in their community.
+              Chore4More is designed to connect women with short, flexible community opportunities that let them use skills and experience they already have. Hosts post clear roles; women choose what fits their abilities and availability.
             </p>
             <div className="hero-actions">
               <Link className="primary-button" to="/register">Get started</Link>
               <a className="secondary-button" href="#how-it-works">See how it works</a>
             </div>
-            <p className="prototype-note">Invitation-only pilot · Original prototype for Young Coders&apos; Sphere</p>
+            <p className="prototype-note">Invitation-only demo · Exploring women's underutilized skills</p>
           </div>
 
-          <div className="demo-panel" aria-label="Example chore request">
+          <div className="demo-panel" aria-label="Sample community opportunity; not a live opening">
             <div className="demo-topbar">
               <span className="demo-logo">C4</span>
-              <span>Request preview</span>
-              <span className="status status--open">Open</span>
+              <span>Sample opportunity</span>
+              <span className="status status--open">Example</span>
             </div>
             <div className="demo-image" role="img" aria-label="Simple illustration of watering a houseplant">
               <span className="sun" />
@@ -147,14 +146,14 @@ function Home() {
             </div>
             <div className="demo-content">
               <div>
-                <p className="demo-kicker">Garden · Flexible</p>
-                <h2>Water balcony plants</h2>
+                <p className="demo-kicker">Community garden · Skill sharing</p>
+                <h2>Plan a balcony garden</h2>
               </div>
               <span className="time-chip">About 30 min</span>
-              <p>I need a little help watering the larger pots and moving one planter.</p>
+              <p>A neighborhood group needs a planting plan for a small container garden.</p>
               <div className="demo-meta">
-                <span>📍 Nearby</span>
-                <span>🧤 Gloves suggested</span>
+                <span>📍 General area</span>
+                <span>🌱 Plant knowledge</span>
               </div>
             </div>
           </div>
@@ -163,23 +162,23 @@ function Home() {
         <section className="steps-section" id="how-it-works">
           <div className="section-heading">
             <p className="project-label">How it works</p>
-            <h2>One clear path for each person.</h2>
+            <h2>Small opportunities. Skills put to use.</h2>
           </div>
           <div className="steps-grid">
             <article>
               <span className="step-number">1</span>
-              <h3>Describe the chore</h3>
-              <p>A senior describes a small task and gives a general area. The pilot coordinator arranges the details privately.</p>
+              <h3>Share an opportunity</h3>
+              <p>A community host posts a small role, a general area and a time estimate. The coordinator arranges details privately.</p>
             </article>
             <article>
               <span className="step-number">2</span>
-              <h3>A volunteer claims it</h3>
-              <p>Nearby volunteers can review open requests and choose a chore that suits their time and skills.</p>
+              <h3>Women choose what fits</h3>
+              <p>Women review available opportunities and choose one that matches their skills, interests and availability.</p>
             </article>
             <article>
               <span className="step-number">3</span>
-              <h3>The task gets done</h3>
-              <p>The volunteer marks the task finished, and the senior confirms it before it counts as completed.</p>
+              <h3>Contributions are recognized</h3>
+              <p>The contributor reports finishing, and the community host confirms it before it counts as complete.</p>
             </article>
           </div>
         </section>
@@ -187,11 +186,10 @@ function Home() {
         <section className="project-strip">
           <div>
             <p className="project-label">About this build</p>
-            <h2>Created by a four-person team who met through Discord.</h2>
+            <h2>Making women's underused skills easier to see and use.</h2>
           </div>
           <p>
-            The original prototype was developed for the Young Coders&apos; Sphere competition.
-            Brhas Hari contributed to backend development and handled debugging, who also handled subsequent interface refinements, deployment, analytics integration and user testing.
+            The prototype was developed for the Young Coders&apos; Sphere competition and is now focused on the underutilization of women&apos;s skills. It explores whether short, flexible community opportunities can make it easier for women to contribute what they know. This invitation-only demo is an early prototype, not evidence of measured impact.
           </p>
         </section>
       </main>
@@ -203,7 +201,7 @@ function Home() {
 function AuthPage({ mode }) {
   const isLogin = mode === 'login';
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'senior', invite_code: '' });
+  const [form, setForm] = useState({ name: '', email: '', password: '', role: 'volunteer', invite_code: '' });
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -221,13 +219,13 @@ function AuthPage({ mode }) {
           email: form.email.trim(), password: form.password,
         });
         saveSession(data);
-        navigate(data.role === 'senior' ? '/senior' : '/volunteer');
+        navigate(data.role === 'senior' ? '/host' : '/contributor');
       } else {
         const payload = { ...form, email: form.email.trim() };
         const { data } = await api.post('/users/register', payload);
         if (data.error) throw new Error(data.error);
         saveSession(data);
-        navigate(form.role === 'senior' ? '/senior' : '/volunteer');
+        navigate(form.role === 'senior' ? '/host' : '/contributor');
       }
     } catch (err) {
       setError(err.message === 'Email already registered' ? err.message : messageFrom(err, isLogin ? 'Sign-in failed.' : 'Registration failed.'));
@@ -250,11 +248,11 @@ function AuthPage({ mode }) {
         <form onSubmit={submit}>
           {!isLogin && (
             <div className="role-selector" aria-label="Choose your role">
-              <button type="button" className={form.role === 'senior' ? 'selected' : ''} onClick={() => setForm({ ...form, role: 'senior' })}>
-                <strong>I need help</strong><span>Senior</span>
-              </button>
               <button type="button" className={form.role === 'volunteer' ? 'selected' : ''} onClick={() => setForm({ ...form, role: 'volunteer' })}>
-                <strong>I want to help</strong><span>Volunteer</span>
+                <strong>I want to use my skills</strong><span>Women contributor</span>
+              </button>
+              <button type="button" className={form.role === 'senior' ? 'selected' : ''} onClick={() => setForm({ ...form, role: 'senior' })}>
+                <strong>I can offer an opportunity</strong><span>Community host</span>
               </button>
             </div>
           )}
@@ -365,7 +363,7 @@ function AnalyticsPage() {
         <div className="analytics-title">
           <p>Private owner view</p>
           <h1>Chore4More pilot analytics</h1>
-          <span>Anonymized evidence of reach, activation and real chore activity.</span>
+          <span>Anonymized evidence of reach, participation and verified community contributions.</span>
         </div>
         <button className="logout-button" onClick={lock}>Lock dashboard</button>
       </header>
@@ -389,9 +387,9 @@ function AnalyticsPage() {
           <>
             <section className="analytics-metrics" aria-label="Key pilot metrics">
               <MetricCard label="Unique visitors" value={data.traffic.unique_visitors} detail="Anonymous browsers" tone="blue" />
-              <MetricCard label="Registered accounts" value={data.users.registered} detail={`${data.users.seniors} seniors · ${data.users.volunteers} volunteers`} tone="navy" />
-              <MetricCard label="Activated accounts" value={data.users.activated} detail="Posted or claimed a chore" tone="green" />
-              <MetricCard label="Completed chores" value={data.chores.completed} detail={`${data.rates.chore_completion}% of requests`} tone="orange" />
+              <MetricCard label="Registered accounts" value={data.users.registered} detail={`${data.users.volunteers} women contributors · ${data.users.seniors} community hosts`} tone="navy" />
+              <MetricCard label="Activated accounts" value={data.users.activated} detail="Posted or selected an opportunity" tone="green" />
+              <MetricCard label="Host-confirmed contributions" value={data.chores.completed} detail={`${data.rates.chore_completion}% of requests`} tone="orange" />
               <MetricCard label="Returning visitors" value={data.traffic.returning_visitors} detail="Two or more sessions" tone="purple" />
               <MetricCard label="Page views" value={data.traffic.page_views} detail={`${data.traffic.sessions} total sessions`} tone="slate" />
             </section>
@@ -409,8 +407,8 @@ function AnalyticsPage() {
                 <div className="analytics-panel-heading"><div><p>Pilot funnel</p><h2>From visit to real-world action</h2></div></div>
                 <FunnelRow label="Visited the site" value={data.traffic.unique_visitors} max={data.traffic.unique_visitors} />
                 <FunnelRow label="Created an account" value={data.users.registered} max={data.traffic.unique_visitors} />
-                <FunnelRow label="Posted or claimed" value={data.users.activated} max={data.traffic.unique_visitors} />
-                <FunnelRow label="Chores completed" value={data.chores.completed} max={data.traffic.unique_visitors} />
+                <FunnelRow label="Posted or joined an opportunity" value={data.users.activated} max={data.traffic.unique_visitors} />
+                <FunnelRow label="Contributions confirmed" value={data.chores.completed} max={data.traffic.unique_visitors} />
                 <div className="rate-row">
                   <div><strong>{data.rates.visitor_to_account}%</strong><span>visitor → account</span></div>
                   <div><strong>{data.rates.account_activation}%</strong><span>account activation</span></div>
@@ -418,11 +416,11 @@ function AnalyticsPage() {
               </article>
 
               <article className="analytics-panel">
-                <div className="analytics-panel-heading"><div><p>Core workflow</p><h2>Chore activity</h2></div></div>
+                <div className="analytics-panel-heading"><div><p>Core workflow</p><h2>Opportunity activity</h2></div></div>
                 <div className="workflow-stats">
-                  <div><span>Requests posted</span><strong>{data.chores.posted}</strong></div>
-                  <div><span>Requests claimed</span><strong>{data.chores.claimed}</strong></div>
-                  <div><span>Requests completed</span><strong>{data.chores.completed}</strong></div>
+                  <div><span>Opportunities posted</span><strong>{data.chores.posted}</strong></div>
+                  <div><span>Opportunities selected</span><strong>{data.chores.claimed}</strong></div>
+                  <div><span>Contributions confirmed</span><strong>{data.chores.completed}</strong></div>
                 </div>
               </article>
 
@@ -515,7 +513,7 @@ function DashboardHeader({ eyebrow, title, description }) {
   );
 }
 
-function SeniorDashboard() {
+function HostDashboard() {
   const session = getSession();
   const [form, setForm] = useState({ title: '', description: '', location: '' });
   const [chores, setChores] = useState([]);
@@ -527,7 +525,7 @@ function SeniorDashboard() {
     try {
       const { data } = await api.get(`/chores/senior/${session.id}`);
       setChores(data);
-    } catch { setMessage({ type: 'error', text: 'Could not load your requests.' }); }
+    } catch { setMessage({ type: 'error', text: 'Could not load your opportunities.' }); }
   }, [session.id]);
 
   useEffect(() => { loadChores(); }, [loadChores]);
@@ -544,10 +542,10 @@ function SeniorDashboard() {
     try {
       await api.post('/chores/post', data);
       setForm({ title: '', description: '', location: '' });
-      setMessage({ type: 'success', text: 'Your request is now visible to volunteers.' });
+      setMessage({ type: 'success', text: 'Your opportunity is now visible to women contributors invited to the pilot.' });
       await loadChores();
     } catch (error) {
-      setMessage({ type: 'error', text: messageFrom(error, 'The request could not be posted.') });
+      setMessage({ type: 'error', text: messageFrom(error, 'The opportunity could not be posted.') });
     } finally { setBusy(''); }
   };
 
@@ -556,33 +554,33 @@ function SeniorDashboard() {
     setMessage({ type: '', text: '' });
     try {
       await api.post(`/chores/${choreId}/confirm`);
-      setMessage({ type: 'success', text: 'Thank you. This chore is now confirmed complete.' });
+      setMessage({ type: 'success', text: 'Thank you. This contribution is now confirmed.' });
       await loadChores();
     } catch (error) {
-      setMessage({ type: 'error', text: messageFrom(error, 'Could not confirm this chore.') });
+      setMessage({ type: 'error', text: messageFrom(error, 'Could not confirm this contribution.') });
     } finally { setConfirming(null); }
   };
 
   return (
     <div className="dashboard-page">
-      <DashboardHeader eyebrow="Senior dashboard" title={`Hello, ${session.name || 'there'}`} description="Create a request and follow its progress." />
+      <DashboardHeader eyebrow="Community host" title={`Hello, ${session.name || 'there'}`} description="Post a small opportunity and confirm each completed contribution." />
       <main className="dashboard-grid">
         <section className="panel request-panel">
-          <div className="panel-heading"><div><p>New request</p><h2>What do you need help with?</h2></div><span className="panel-icon">＋</span></div>
+          <div className="panel-heading"><div><p>New opportunity</p><h2>What could someone contribute?</h2></div><span className="panel-icon">＋</span></div>
           <form onSubmit={post}>
-            <Field label="Chore title" value={form.title} onChange={(title) => setForm({ ...form, title })} placeholder="e.g. Carry two boxes upstairs" />
-            <label className="field"><span>Description</span><textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Add anything the volunteer should know" required /></label>
-            <Field label="General location" value={form.location} onChange={(location) => setForm({ ...form, location })} placeholder="e.g. Setagaya, Tokyo" />
-            <p className="safety-note">Use only a general area. Do not enter an address, phone number, or sensitive details here. Your coordinator will arrange the visit.</p>
+            <Field label="Opportunity title" value={form.title} onChange={(title) => setForm({ ...form, title })} placeholder="e.g. Plan a community garden" />
+            <label className="field"><span>Description</span><textarea value={form.description} onChange={(event) => setForm({ ...form, description: event.target.value })} placeholder="Describe the skills involved and the time commitment" required /></label>
+            <Field label="General location" value={form.location} onChange={(location) => setForm({ ...form, location })} placeholder="e.g. a neighborhood in Tokyo" />
+            <p className="safety-note">Use only a general area. Do not enter an address, phone number, or sensitive details here. Your coordinator will arrange any meeting details privately.</p>
             {message.text && <p className={`form-message form-message--${message.type}`}>{message.text}</p>}
-            <button className="primary-button form-submit" disabled={Boolean(busy)}>{busy === 'post' ? 'Posting…' : 'Post request'}</button>
+            <button className="primary-button form-submit" disabled={Boolean(busy)}>{busy === 'post' ? 'Posting…' : 'Post opportunity'}</button>
           </form>
         </section>
 
         <section className="panel activity-panel">
-          <div className="panel-heading"><div><p>Your activity</p><h2>Recent requests</h2></div><span className="count-chip">{chores.length}</span></div>
+          <div className="panel-heading"><div><p>Your activity</p><h2>Published opportunities</h2></div><span className="count-chip">{chores.length}</span></div>
           <div className="chore-list">
-            {chores.length ? chores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'awaiting_confirmation' ? (confirming === chore.id ? 'Saving…' : 'Confirm it was done') : null} disabled={confirming === chore.id} onAction={() => confirm(chore.id)} />) : <EmptyState title="No requests yet" text="Your first posted chore will appear here." />}
+            {chores.length ? chores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'awaiting_confirmation' ? (confirming === chore.id ? 'Saving…' : 'Confirm it was done') : null} disabled={confirming === chore.id} onAction={() => confirm(chore.id)} />) : <EmptyState title="No opportunities yet" text="Your first published opportunity will appear here." />}
           </div>
         </section>
       </main>
@@ -597,12 +595,12 @@ function AnalysisCard({ analysis }) {
       {analysis.tools_needed?.length > 0 && <p><b>Tools:</b> {analysis.tools_needed.join(', ')}</p>}
       {analysis.steps?.length > 0 && <ol>{analysis.steps.map((step) => <li key={step}>{step}</li>)}</ol>}
       {analysis.safety_notes && <p><b>Safety:</b> {analysis.safety_notes}</p>}
-      <small>Review these suggestions before sharing them with a volunteer.</small>
+      <small>Review these suggestions before sharing them with a woman contributor.</small>
     </div>
   );
 }
 
-function VolunteerDashboard() {
+function ContributorDashboard() {
   const session = getSession();
   const [openChores, setOpenChores] = useState([]);
   const [myChores, setMyChores] = useState([]);
@@ -628,32 +626,32 @@ function VolunteerDashboard() {
     try {
       await api.post(`/chores/${choreId}/${action}?volunteer_id=${session.id}`);
       await load();
-    } catch (err) { setError(messageFrom(err, `Could not ${action} this chore.`)); }
+    } catch (err) { setError(messageFrom(err, `Could not ${action} this opportunity.`)); }
     finally { setBusy(null); }
   };
 
   return (
     <div className="dashboard-page">
-      <DashboardHeader eyebrow="Volunteer dashboard" title={`Ready to help, ${session.name || 'there'}?`} description="Choose a request that fits your time and skills." />
+      <DashboardHeader eyebrow="Women contributor" title={`Ready to contribute, ${session.name || 'there'}?`} description="Choose a short local opportunity that fits your skills, interests and availability." />
       <main className="volunteer-layout">
-        <section className="stats-row" aria-label="Volunteer summary">
-          <div><span>Available nearby</span><strong>{openChores.length}</strong></div>
-          <div><span>Your active chores</span><strong>{myChores.filter((item) => item.status === 'claimed').length}</strong></div>
-          <div><span>Completed</span><strong>{stats.completed_chores || 0}</strong></div>
-          <div><span>Points earned</span><strong>{stats.points || 0}</strong></div>
+        <section className="stats-row" aria-label="Contributor summary">
+          <div><span>Available opportunities</span><strong>{openChores.length}</strong></div>
+          <div><span>In progress</span><strong>{myChores.filter((item) => item.status === 'claimed').length}</strong></div>
+          <div><span>Host-confirmed</span><strong>{stats.completed_chores || 0}</strong></div>
+          <div><span>Recognition points</span><strong>{stats.points || 0}</strong></div>
         </section>
         {error && <p className="form-message form-message--error dashboard-message">{error}</p>}
         <div className="volunteer-columns">
           <section className="panel">
-            <div className="panel-heading"><div><p>Community board</p><h2>Open requests</h2></div><span className="count-chip">{openChores.length}</span></div>
+            <div className="panel-heading"><div><p>Community board</p><h2>Open opportunities</h2></div><span className="count-chip">{openChores.length}</span></div>
             <div className="chore-list">
-              {openChores.length ? openChores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={busy === chore.id ? 'Claiming…' : 'I can help'} disabled={busy === chore.id} onAction={() => act(chore.id, 'claim')} />) : <EmptyState title="Nothing open right now" text="New requests will appear here when seniors post them." />}
+              {openChores.length ? openChores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={busy === chore.id ? 'Selecting…' : 'Select opportunity'} disabled={busy === chore.id} onAction={() => act(chore.id, 'claim')} />) : <EmptyState title="Nothing open right now" text="New opportunities will appear here when community hosts post them." />}
             </div>
           </section>
           <section className="panel">
-            <div className="panel-heading"><div><p>Your commitments</p><h2>Claimed and completed</h2></div><span className="count-chip">{myChores.length}</span></div>
+            <div className="panel-heading"><div><p>Your contributions</p><h2>Selected and confirmed</h2></div><span className="count-chip">{myChores.length}</span></div>
             <div className="chore-list">
-              {myChores.length ? myChores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'claimed' ? (busy === chore.id ? 'Saving…' : 'Mark finished') : null} disabled={busy === chore.id} onAction={chore.status === 'claimed' ? () => act(chore.id, 'complete') : null} />) : <EmptyState title="No claimed chores" text="When you offer to help, the request will move here." />}
+              {myChores.length ? myChores.map((chore) => <ChoreCard key={chore.id} chore={chore} actionLabel={chore.status === 'claimed' ? (busy === chore.id ? 'Saving…' : 'Mark contribution complete') : null} disabled={busy === chore.id} onAction={chore.status === 'claimed' ? () => act(chore.id, 'complete') : null} />) : <EmptyState title="No opportunities yet" text="When you choose an opportunity, it will appear here." />}
             </div>
           </section>
         </div>
@@ -663,13 +661,13 @@ function VolunteerDashboard() {
 }
 
 function ChoreCard({ chore, actionLabel, onAction, disabled }) {
-  const status = chore.status === 'done' ? 'complete' : chore.status === 'awaiting_confirmation' ? 'awaiting confirmation' : chore.status;
+  const status = chore.status === 'done' ? 'complete' : chore.status === 'awaiting_confirmation' ? 'awaiting host confirmation' : chore.status === 'claimed' ? 'selected' : chore.status;
   return (
     <article className="chore-card">
-      <div className="chore-card-top"><span className={`status status--${chore.status === 'awaiting_confirmation' ? 'claimed' : status}`}>{status}</span><span className="chore-location">{chore.location || 'Location not specified'}</span></div>
+      <div className="chore-card-top"><span className={`status status--${chore.status === 'awaiting_confirmation' || chore.status === 'claimed' ? 'claimed' : chore.status === 'done' ? 'complete' : status}`}>{status}</span><span className="chore-location">{chore.location || 'Location not specified'}</span></div>
       <h3>{chore.title}</h3>
       <p>{chore.description || 'No additional details provided.'}</p>
-      {(chore.ai_estimated_time || chore.ai_difficulty) && <div className="chore-details"><span>{chore.ai_estimated_time || 'Time not estimated'}</span><span>{chore.ai_difficulty || 'Difficulty not rated'}</span></div>}
+      {(chore.ai_estimated_time || chore.ai_difficulty) && <div className="chore-details"><span>{chore.ai_estimated_time || 'Time commitment not set'}</span><span>{chore.ai_difficulty || 'Level not specified'}</span></div>}
       {chore.ai_safety_notes && <p className="safety-note"><b>Safety:</b> {chore.ai_safety_notes}</p>}
       {actionLabel && <button className="card-action" onClick={onAction} disabled={disabled}>{actionLabel}</button>}
     </article>
@@ -681,7 +679,7 @@ function EmptyState({ title, text }) {
 }
 
 function Footer() {
-  return <footer className="site-footer"><Brand /><p>Original team project for Young Coders&apos; Sphere.</p></footer>;
+  return <footer className="site-footer"><Brand /><p>A student-built prototype exploring women's underutilized skills.</p></footer>;
 }
 
 function App() {
@@ -692,8 +690,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<AuthPage mode="register" />} />
         <Route path="/login" element={<AuthPage mode="login" />} />
-        <Route path="/senior" element={<SeniorDashboard />} />
-        <Route path="/volunteer" element={<VolunteerDashboard />} />
+        <Route path="/host" element={<HostDashboard />} />
+        <Route path="/contributor" element={<ContributorDashboard />} />
         <Route path="/analytics" element={<AnalyticsPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
